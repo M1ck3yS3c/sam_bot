@@ -6,6 +6,7 @@ const app = express();
 // include controllers to the main logic to setup the endpoints
 const verificationController = require('./controllers/verification.js');
 const messageWebhookController = require('./controllers/messageWebhook.js');
+const weatherController = require('./controllers/weather.js');
 
 //messages are parsed in json format
 app.use(bodyParser.json());
@@ -20,3 +21,5 @@ app.get ('/',verificationController);
 app.post('/',messageWebhookController);
 app.listen(3000, () => console.log('Webhook server is listening on port 3000'));
 
+//http weatherController 
+app.post('/weather', weatherController);

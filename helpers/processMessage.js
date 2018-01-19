@@ -23,12 +23,26 @@ module.exports = (event) => {
     const senderId = event.sender.id;
     const message = event.message.text;
     
+    //console.log(JSON.stringify(event));
+    
     //Creating a seesion between the webhook and apiai
     const apiaiSession = API_AI_CLIENT.textRequest(message, {sessionId: 'sam_bot'});
 
     //Capture the response
     apiaiSession.on('response', (response) => {
+        //console.log(JSON.stringify(response));
+        //HERE we need to catch the intent (action) 
+        //Create a switch case for action being: smalltak or weather.
+        //If small talk procced with const result = response.result.fulfillment.speech;
+        //IF weather CREATE a request and then ask for the weatherController
+        
         const result = response.result.fulfillment.speech;
+        //console.log(JSON.stringify(response));
+        /*
+        if (response.result.metadata.intentName === 'weather') {
+            sendImage(senderId, result);
+        }
+        */
         sendTextMessage(senderId, result);
     });
 
