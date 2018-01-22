@@ -6,30 +6,42 @@ const request = require('request');
 //api.openweathermap.org/data/2.5/weather?q={city name}
 
 module.exports = (req, res) => {
+    console.log('in weather module');
     if (req.body.result.action === 'weather') {
         const cityName = req.body.result.parameters.location['city'];
-        const apiUrl = OWM_BASE_URL + '?q=' + cityName + '&APPID=' + OWM_API_KEY ;
+        const apiUrl = OWM_BASE_URL + '?q=' + cityName + '&APPID=' + OWM_API_KEY + '&units=metric';
 
         request({
-            uri: apiUrl,
-            methos: 'GET'
+            url: apiUrl,
+            method: 'GET'
         }, (err, response, body) => {
+            //jsonBody = JSON.parse(body);
+            //theWeather = [jsonBody.weather[0].main , jsonBody.weather[0].description];
+            //console.log(theWeather);
             //body = JSON.stringify(eval ('(' + body + ')')); 
-            console.log(JSON.parse(body).weather[1]);
+            //console.log(JSON.parse(body).weather[1]);
             //console.log(JSON.parse(body).weather['main']);
+            //const loc = JSON.parse(body).name;
 
-            const resWeather = [
-                JSON.parse(body).weather['main'],
-                JSON.parse(body).weather['description']
-            ];
+            const loc = JSON.parse(body).name;
+            const resWeather  =  JSON.parse(body).weather[0].main;
+            const resDescription =  JSON.parse(body).weather[0].description;
             const resTemp = JSON.parse(body).main['temp'];
-            
-            console.log('*********' + JSON.stringify(resWeather));
 
+            console.log(loc +' '+resWeather+' '+resDescription+' '+resTemp);
+            /*console.log(response);
+            console.log('*****************************');
+            console.log('*********' + resWeather + ' ' + resTemp);
+            */
+            //console.log(JSON.parse(body).name);
+            console.log('out of weather module');
             return res.json({
-                speech: resWeather,
-                displayText: resTemp
+                "location": loc, 
+                "weather": resWeather,
+                "description": resDescription,
+                "temperature": resTemp
             });
+            console.log(res);
         })
     }
 }

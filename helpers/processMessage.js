@@ -6,6 +6,7 @@ const CAT_IMAGE_URL = 'https://botcube.co/public/blog/apiai-tutorial-bot/hosico_
 const request = require('request');
 const API_AI_CLIENT = require('apiai')(API_AI_TOKEN);
 
+//Small talk message processing
 const sendTextMessage = (senderId, text) => {
     request({
         url: 'https://graph.facebook.com/v2.11/me/messages',
@@ -18,6 +19,23 @@ const sendTextMessage = (senderId, text) => {
     });
 };
 
+//Weather message processing
+
+const checkWeather = (senderId,location,weather,description,temperature) => {
+    console.log(senderId);
+    console.log(location);
+    return request({
+        url: 'https://graph.facebook.com/v2.11/me/messages',
+        qs: { access_token: FACEBOOK_ACCESS_TOKEN},
+        method: 'POST',
+        json:{
+            recipient: {id: senderId},
+            message: {
+                    text: "The weather in " + location + " is " + weather + " with " + description + " and a temperature of " + temperature + "°C"
+            }
+        }
+    });
+};
 //Making the code in braces available GLOBALLY
 module.exports = (event) => {
     const senderId = event.sender.id;
@@ -30,20 +48,31 @@ module.exports = (event) => {
 
     //Capture the response
     apiaiSession.on('response', (response) => {
-        //console.log(JSON.stringify(response));
+        const result = response.result.fulfillment.speech;
+        //console.log(response);
         //HERE we need to catch the intent (action) 
         //Create a switch case for action being: smalltak or weather.
+      
+        switch(response.result.metadata.intentName){
+            case 'weather':
+            console.log('processing weather')
+                checkWeather(senderId,loc,resWeather,resDescription,resTemp);
+                break;
+            default:
+                sendTextMessage(senderId, result);      
+        }
+        
         //If small talk procced with const result = response.result.fulfillment.speech;
         //IF weather CREATE a request and then ask for the weatherController
         
-        const result = response.result.fulfillment.speech;
+       
         //console.log(JSON.stringify(response));
         /*
         if (response.result.metadata.intentName === 'weather') {
             sendImage(senderId, result);
         }
         */
-        sendTextMessage(senderId, result);
+        
     });
 
     apiaiSession.on('error', error => console.log(error));
