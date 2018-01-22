@@ -21,9 +21,10 @@ const sendTextMessage = (senderId, text) => {
 
 //Weather message processing
 
-const checkWeather = (senderId,location,weather,description,temperature) => {
+//LEAVING THIS HERE BUT NOT REALLY USING IT
+const checkWeather = (senderId,result) => {
     console.log(senderId);
-    console.log(location);
+    console.log(result.location);
     return request({
         url: 'https://graph.facebook.com/v2.11/me/messages',
         qs: { access_token: FACEBOOK_ACCESS_TOKEN},
@@ -31,7 +32,7 @@ const checkWeather = (senderId,location,weather,description,temperature) => {
         json:{
             recipient: {id: senderId},
             message: {
-                    text: "The weather in " + location + " is " + weather + " with " + description + " and a temperature of " + temperature + "°C"
+                    text: "The weather in " + result.location + " is " + result.weather + " with " + result.description + " and a temperature of " + result.temperature + "°C"
             }
         }
     });
@@ -49,29 +50,19 @@ module.exports = (event) => {
     //Capture the response
     apiaiSession.on('response', (response) => {
         const result = response.result.fulfillment.speech;
-        //console.log(response);
+        console.log("result : " + JSON.stringify(result));
         //HERE we need to catch the intent (action) 
         //Create a switch case for action being: smalltak or weather.
       
         switch(response.result.metadata.intentName){
             case 'weather':
             console.log('processing weather')
-                checkWeather(senderId,loc,resWeather,resDescription,resTemp);
+                //checkWeather(senderId,loc,resWeather,resDescription,resTemp);
+                sendTextMessage(senderId,result);
                 break;
             default:
                 sendTextMessage(senderId, result);      
         }
-        
-        //If small talk procced with const result = response.result.fulfillment.speech;
-        //IF weather CREATE a request and then ask for the weatherController
-        
-       
-        //console.log(JSON.stringify(response));
-        /*
-        if (response.result.metadata.intentName === 'weather') {
-            sendImage(senderId, result);
-        }
-        */
         
     });
 

@@ -15,13 +15,6 @@ module.exports = (req, res) => {
             url: apiUrl,
             method: 'GET'
         }, (err, response, body) => {
-            //jsonBody = JSON.parse(body);
-            //theWeather = [jsonBody.weather[0].main , jsonBody.weather[0].description];
-            //console.log(theWeather);
-            //body = JSON.stringify(eval ('(' + body + ')')); 
-            //console.log(JSON.parse(body).weather[1]);
-            //console.log(JSON.parse(body).weather['main']);
-            //const loc = JSON.parse(body).name;
 
             const loc = JSON.parse(body).name;
             const resWeather  =  JSON.parse(body).weather[0].main;
@@ -29,19 +22,14 @@ module.exports = (req, res) => {
             const resTemp = JSON.parse(body).main['temp'];
 
             console.log(loc +' '+resWeather+' '+resDescription+' '+resTemp);
-            /*console.log(response);
-            console.log('*****************************');
-            console.log('*********' + resWeather + ' ' + resTemp);
-            */
-            //console.log(JSON.parse(body).name);
-            console.log('out of weather module');
+
+            //Constructing the message here rathern than dealing with JSON later 
+            const message = "The weather in " + loc + " is " + 
+                resWeather + " with " + resDescription + " and a temperature of " + 
+                resTemp + "°C";
             return res.json({
-                "location": loc, 
-                "weather": resWeather,
-                "description": resDescription,
-                "temperature": resTemp
+                "speech": message
             });
-            console.log(res);
         })
     }
 }
